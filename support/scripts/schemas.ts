@@ -1,4 +1,10 @@
-import { quicktype, InputData, JSONSchemaInput, FetchingJSONSchemaStore } from "quicktype-core";
+import {
+  quicktype,
+  quicktypeMultiFile,
+  InputData,
+  JSONSchemaInput,
+  FetchingJSONSchemaStore,
+} from "quicktype-core";
 
 import fs from "fs";
 import path from "path";
@@ -63,6 +69,14 @@ async function main() {
   });
 
   writeToFile("./languages/csharp/Bitwarden.Sdk/schemas.cs", csharp.lines);
+
+  const cpp = await quicktype({
+    inputData,
+    lang: "cpp",
+    rendererOptions: {},
+  });
+
+  writeToFile("./languages/cpp/include/schemas.cpp", cpp.lines);
 }
 
 main();
