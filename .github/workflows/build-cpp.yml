@@ -123,6 +123,6 @@ jobs:
         with:
           name: Bitwarden-SDK-${{ matrix.target }}.${{ matrix.extension }}
           path: |
-            ./languages/cpp/build/BitwardenClient.${{ matrix.extension }}
+            ./languages/cpp/build/${{ matrix.prefix }}BitwardenClient.${{ matrix.extension }}
             ./languages/cpp/build/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
             ./languages/cpp/include/
