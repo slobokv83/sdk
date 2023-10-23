@@ -62,16 +62,16 @@ jobs:
       #     name: schemas.cpp
       #     path: languages/cpp/include
 
-      - name: Setup C++
-        uses: aminya/setup-cpp@v1
-        with:
-          compiler: ${{ matrix.compiler }}
-          vcvarsall: ${{ contains(matrix.os, 'windows') }}
-          cmake: true
-          ninja: true
-          vcpkg: true
-          cppcheck: true
-          clangtidy: true
+      # - name: Setup C++
+      #   uses: aminya/setup-cpp@v1
+      #   with:
+      #     compiler: ${{ matrix.compiler }}
+      #     vcvarsall: ${{ contains(matrix.os, 'windows') }}
+      #     cmake: true
+      #     ninja: true
+      #     vcpkg: true
+      #     cppcheck: true
+      #     clangtidy: true
 
       # - name: Download x86_64-apple-darwin files
       #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
@@ -113,9 +113,9 @@ jobs:
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xvf v3.11.2.tar.gz
           wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
-          # tar -xvf boost.tar.gz
-          # ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
-          # ./b2 install
+          tar -xvf boost_1_83_0.tar.gz
+          ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
+          ./b2 install
       # - name: Build C++ Project
       #   if: "!contains(matrix.os, 'windows')"
       #   working-directory: languages/cpp/build
