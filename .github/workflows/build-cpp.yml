@@ -100,15 +100,19 @@ jobs:
       #     name: libbitwarden_c_files-x86_64-pc-windows-msvc
       #     path: languages/cpp/build
       #   if: contains(matrix.os, 'windows')
-      # - name: Create Build folder
-      #   run: mkdir -p languages/cpp/build
+      - name: Create Build folder
+        run: mkdir -p languages/cpp/build
+
+      - name: Create libs folder
+        run: mkdir -p libs
 
       - name: Download Dependencies
         if: "!contains(matrix.os, 'windows')"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
-          curl https://github.com/nlohmann/json/releases/download/v3.11.2/json.hpp -o json.hpp
-          curl https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz -o boost.tar.gz
+          wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+          tar -xvf v3.11.2.tar.gz
+          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz -o boost.tar.gz
           tar -xvf boost.tar.gz
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           ./b2 install
@@ -116,7 +120,7 @@ jobs:
         if: "!contains(matrix.os, 'windows')"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }} -DBOOST=${{ env.LIBS_PATH }} -DTARGET=./target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
           cmake --build .
       - name: Upload C++ package
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
