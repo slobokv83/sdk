@@ -11,7 +11,7 @@ env:
 
 jobs:
   generate_schemas:
-  uses: ./.github/workflows/generate_schemas.yml
+    uses: ./.github/workflows/generate_schemas.yml
 
   build_rust:
     uses: ./.github/workflows/build-rust-cross-platform.yml
