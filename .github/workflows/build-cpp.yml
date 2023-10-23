@@ -48,9 +48,9 @@ jobs:
     #         architecture: arm64
     #         extension: dylib
     #         target: arm64-apple-macos12
-    needs:
-      # - generate_schemas
-      # - build_rust
+    # needs:
+    # - generate_schemas
+    # - build_rust
 
     steps:
       - name: Checkout Repository
