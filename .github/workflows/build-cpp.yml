@@ -10,11 +10,11 @@ env:
   LIBS_PATH: ${{ github.workspace }}/libs
 
 jobs:
-  generate_schemas:
-    uses: ./.github/workflows/generate_schemas.yml
+  # generate_schemas:
+  #   uses: ./.github/workflows/generate_schemas.yml
 
-  build_rust:
-    uses: ./.github/workflows/build-rust-cross-platform.yml
+  # build_rust:
+  #   uses: ./.github/workflows/build-rust-cross-platform.yml
 
   build_cpp:
     name: Build C++
@@ -24,7 +24,7 @@ jobs:
         os:
           # - windows-2022
           - ubuntu-22.04
-          - macos-12
+          # - macos-12
         compiler:
           - llvm
         prefix:
@@ -40,17 +40,17 @@ jobs:
             architecture: x86_64
             extension: so
             target: x86_64-linux-gnu
-          - os: macos-12
-            architecture: x86_64
-            extension: dylib
-            target: x86_64-apple-macos12
-          - os: macos-12
-            architecture: arm64
-            extension: dylib
-            target: arm64-apple-macos12
-    needs:
-      - generate_schemas
-      - build_rust
+          # - os: macos-12
+          #   architecture: x86_64
+          #   extension: dylib
+          #   target: x86_64-apple-macos12
+          # - os: macos-12
+          #   architecture: arm64
+          #   extension: dylib
+          #   target: arm64-apple-macos12
+    # needs:
+    #   - generate_schemas
+    #   - build_rust
 
     steps:
       - name: Checkout Repository
@@ -73,19 +73,19 @@ jobs:
           cppcheck: true
           clangtidy: true
 
-      - name: Download x86_64-apple-darwin files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-x86_64-apple-darwin
-          path: languages/cpp/build
-        if: contains(matrix.os, 'macos') && matrix.architecture=='x86_64'
+      # - name: Download x86_64-apple-darwin files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-x86_64-apple-darwin
+      #     path: languages/cpp/build
+      #   if: contains(matrix.os, 'macos') && matrix.architecture=='x86_64'
 
-      - name: Download aarch64-apple-darwin files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-aarch64-apple-darwin
-          path: languages/cpp/build
-        if: contains(matrix.os, 'macos') && matrix.architecture=='arm64'
+      # - name: Download aarch64-apple-darwin files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-aarch64-apple-darwin
+      #     path: languages/cpp/build
+      #   if: contains(matrix.os, 'macos') && matrix.architecture=='arm64'
 
       - name: Download x86_64-unknown-linux-gnu files
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
@@ -106,29 +106,36 @@ jobs:
       - name: Create libs folder
         run: mkdir -p libs
 
-      - name: Download Dependencies
-        if: "!contains(matrix.os, 'windows')"
-        working-directory: ${{ env.LIBS_PATH }}
-        run: |
-          wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
-          tar -xvf v3.11.2.tar.gz
-          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
-          tar -xvf boost_1_83_0.tar.gz
-          cd boost_1_83_0
-          ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
-          ./b2 install
-
-      - name: Build C++ Project
-        if: "!contains(matrix.os, 'windows')"
+      # - name: Download Dependencies
+      #   if: "!contains(matrix.os, 'windows')"
+      #   working-directory: ${{ env.LIBS_PATH }}
+      #   run: |
+      #     wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+      #     tar -xvf v3.11.2.tar.gz
+      #     wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+      #     tar -xvf boost_1_83_0.tar.gz
+      #     cd boost_1_83_0
+      #     ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
+      #     ./b2 install
+      - name: List
         working-directory: languages/cpp/build
-        run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=../../target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
-          cmake --build .
-      - name: Upload C++ package
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
-        with:
-          name: Bitwarden-SDK-${{ matrix.target }}.${{ matrix.extension }}
-          path: |
-            ./languages/cpp/build/${{ matrix.prefix }}BitwardenClient.${{ matrix.extension }}
-            ./languages/cpp/build/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
-            ./languages/cpp/include/
+        run: ls -la
+
+      - name: List
+        working-directory: languages/cpp/build
+        run: ls -la build/${{ matrix.settings.target }}/release
+
+      # - name: Build C++ Project
+      #   if: "!contains(matrix.os, 'windows')"
+      #   working-directory: languages/cpp/build
+      #   run: |
+      #     cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
+      #     cmake --build .
+      # - name: Upload C++ package
+      #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+      #   with:
+      #     name: Bitwarden-SDK-${{ matrix.target }}.${{ matrix.extension }}
+      #     path: |
+      #       ./languages/cpp/build/${{ matrix.prefix }}BitwardenClient.${{ matrix.extension }}
+      #       ./languages/cpp/build/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
+      #       ./languages/cpp/include/
