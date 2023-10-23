@@ -13,8 +13,8 @@ jobs:
   # generate_schemas:
   #   uses: ./.github/workflows/generate_schemas.yml
 
-  # build_rust:
-  #   uses: ./.github/workflows/build-rust-cross-platform.yml
+  build_rust:
+    uses: ./.github/workflows/build-rust-cross-platform.yml
 
   build_cpp:
     name: Build C++
@@ -48,9 +48,9 @@ jobs:
           #   architecture: arm64
           #   extension: dylib
           #   target: arm64-apple-macos12
-    # needs:
-    #   - generate_schemas
-    #   - build_rust
+    needs:
+      # - generate_schemas
+      - build_rust
 
     steps:
       - name: Checkout Repository
