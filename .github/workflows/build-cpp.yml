@@ -117,6 +117,16 @@ jobs:
           cd boost_1_83_0
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           ./b2 install
+
+      - name: Debug - List Contents of /libs
+        run: ls -la /libs
+
+      - name: Debug - List Contents of /libs/boost_1_83_0
+        run: ls -la /libs/boost_1_83_0
+
+      - name: Debug - List Contents of /libs/boost_1_83_0/include
+        run: ls -la /libs/boost_1_83_0/include
+
       # - name: Build C++ Project
       #   if: "!contains(matrix.os, 'windows')"
       #   working-directory: languages/cpp/build
