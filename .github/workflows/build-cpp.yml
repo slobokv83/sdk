@@ -13,8 +13,8 @@ jobs:
   # generate_schemas:
   # uses: ./.github/workflows/generate_schemas.yml
 
-  build_rust:
-    uses: ./.github/workflows/build-rust-cross-platform.yml
+  # build_rust:
+  #   uses: ./.github/workflows/build-rust-cross-platform.yml
 
   build_cpp:
     name: Build C++
@@ -50,7 +50,7 @@ jobs:
     #         target: arm64-apple-macos12
     needs:
       # - generate_schemas
-      - build_rust
+      # - build_rust
 
     steps:
       - name: Checkout Repository
@@ -87,12 +87,12 @@ jobs:
       #     path: languages/cpp/build
       #   if: contains(matrix.os, 'macos') && matrix.architecture=='arm64'
 
-      - name: Download x86_64-unknown-linux-gnu files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-x86_64-unknown-linux-gnu
-          path: languages/cpp/build
-        if: contains(matrix.os, 'ubuntu')
+      # - name: Download x86_64-unknown-linux-gnu files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-x86_64-unknown-linux-gnu
+      #     path: languages/cpp/build
+      #   if: contains(matrix.os, 'ubuntu')
 
       # - name: Download x86_64-pc-windows-msvc files
       #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
@@ -112,21 +112,21 @@ jobs:
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xvf v3.11.2.tar.gz
-          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz -o boost.tar.gz
-          tar -xvf boost.tar.gz
-          ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
-          ./b2 install
-      - name: Build C++ Project
-        if: "!contains(matrix.os, 'windows')"
-        working-directory: languages/cpp/build
-        run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
-          cmake --build .
-      - name: Upload C++ package
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-        with:
-          name: Bitwarden-SDK-${{ matrix.target }}.${{ matrix.extension }}
-          path: |
-            ./languages/cpp/build/${{ matrix.prefix }}BitwardenClient.${{ matrix.extension }}
-            ./languages/cpp/build/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
-            ./languages/cpp/include/
+          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+          # tar -xvf boost.tar.gz
+          # ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
+          # ./b2 install
+      # - name: Build C++ Project
+      #   if: "!contains(matrix.os, 'windows')"
+      #   working-directory: languages/cpp/build
+      #   run: |
+      #     cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
+      #     cmake --build .
+      # - name: Upload C++ package
+      #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+      #   with:
+      #     name: Bitwarden-SDK-${{ matrix.target }}.${{ matrix.extension }}
+      #     path: |
+      #       ./languages/cpp/build/${{ matrix.prefix }}BitwardenClient.${{ matrix.extension }}
+      #       ./languages/cpp/build/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
+      #       ./languages/cpp/include/
