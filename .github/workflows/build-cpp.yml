@@ -135,31 +135,3 @@ jobs:
             ./languages/cpp/build/${{ matrix.prefix }}BitwardenClient.${{ matrix.extension }}
             ./languages/cpp/build/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
             ./languages/cpp/include/
-
-# # Create a job for each target based on the template
-# - name: Build C++ SDK for Windows
-#   uses: ./.github/workflows/build-rust-cross-platform.yml
-#   with:
-#     matrix.target: x86_64-pc-windows-msvc
-#     matrix.os: windows-2022
-
-# Create a job for each target based on the template
-- name: Build C++ SDK for Ubuntu
-  uses: ./.github/workflows/build-rust-cross-platform.yml
-  with:
-    matrix.target: x86_64-linux-gnu
-    matrix.os: ubuntu-22.04
-
-# Create a job for each target based on the template
-- name: Build C++ SDK for macOS x86_64
-  uses: ./.github/workflows/build-rust-cross-platform.yml
-  with:
-    matrix.target: x86_64-apple-macos12
-    matrix.os: macos-12
-
-# Create a job for each target based on the template
-- name: Build C++ SDK for macOS ARM
-  uses: ./.github/workflows/build-rust-cross-platform.yml
-  with:
-    matrix.target: arm64-apple-macos12
-    matrix.os: macos-12
