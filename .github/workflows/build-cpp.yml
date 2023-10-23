@@ -114,6 +114,7 @@ jobs:
           tar -xvf v3.11.2.tar.gz
           wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
           tar -xvf boost_1_83_0.tar.gz
+          cd boost_1_83_0
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           ./b2 install
       # - name: Build C++ Project
