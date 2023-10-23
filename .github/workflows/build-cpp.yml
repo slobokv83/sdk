@@ -44,8 +44,6 @@ jobs:
           - so
           - dylib
           - dylib
-        include:
-          - ""
     needs:
       - generate_schemas
       - build_rust
