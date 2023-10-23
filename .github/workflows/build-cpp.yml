@@ -59,7 +59,7 @@ jobs:
       - name: Download C++ schemas artifact
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          name: schemas.hpp
+          name: schemas.pp
           path: languages/cpp/include
 
       - name: Setup C++
@@ -122,7 +122,7 @@ jobs:
         if: "!contains(matrix.os, 'windows')"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=../../target/${{ matrix.settings.target }}/release/${{ matrix.prefix }}bitwarden_c.${{ matrix.extension }}
           cmake --build .
       - name: Upload C++ package
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
