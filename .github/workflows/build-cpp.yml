@@ -119,13 +119,20 @@ jobs:
           ./b2 install
 
       - name: Debug - List Contents of /libs
-        run: ls -la /libs
+        working-directory: ${{ env.LIBS_PATH }}
+        run: ls -la
 
       - name: Debug - List Contents of /libs/boost_1_83_0
-        run: ls -la /libs/boost_1_83_0
+        working-directory: ${{ env.LIBS_PATH }}
+        run: ls -la boost_1_83_0
 
       - name: Debug - List Contents of /libs/boost_1_83_0/include
-        run: ls -la /libs/boost_1_83_0/include
+        working-directory: ${{ env.LIBS_PATH }}
+        run: ls -la boost_1_83_0/include
+
+      - name: Debug - List Contents of /libs
+        working-directory: ${{ env.LIBS_PATH }}
+        run: ls -la json-3.11.2/include
 
       # - name: Build C++ Project
       #   if: "!contains(matrix.os, 'windows')"
