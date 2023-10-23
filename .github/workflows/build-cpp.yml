@@ -40,12 +40,12 @@ jobs:
             prefix: lib
             extension: so
             architecture: x86_64
-          # - os: windows-2022
-          #   target: x86_64-pc-windows-msvc
-          #   compiler: msvc
-          #   prefix: ""
-          #   extension: dll
-          #   architecture: x86_64
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            compiler: msvc
+            prefix: ""
+            extension: dll
+            architecture: x86_64
     needs:
       - generate_schemas
       - build_rust
@@ -92,12 +92,12 @@ jobs:
           path: languages/cpp/build
         if: contains(matrix.settings.os, 'ubuntu')
 
-      # - name: Download x86_64-pc-windows-msvc files
-      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      #   with:
-      #     name: libbitwarden_c_files-x86_64-pc-windows-msvc
-      #     path: languages/cpp/build
-      #   if: contains(matrix.settings.os, 'windows')
+      - name: Download x86_64-pc-windows-msvc files
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: libbitwarden_c_files-x86_64-pc-windows-msvc
+          path: languages/cpp/build
+        if: contains(matrix.settings.os, 'windows')
       - name: Create Build folder
         run: mkdir -p languages/cpp/build
 
@@ -105,7 +105,7 @@ jobs:
         run: mkdir -p libs
 
       - name: Download Dependencies
-        if: "!contains(matrix.settings.os, 'windows')"
+        # if: "!contains(matrix.settings.os, 'windows')"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
@@ -117,7 +117,7 @@ jobs:
           ./b2 install
 
       - name: Build C++ Project
-        if: "!contains(matrix.settings.os, 'windows')"
+        # if: "!contains(matrix.settings.os, 'windows')"
         working-directory: languages/cpp/build
         run: |
           cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
@@ -130,3 +130,6 @@ jobs:
             ./languages/cpp/build/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }}
             ./languages/cpp/build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
             ./languages/cpp/include/
+            ./languages/cpp/examples/
+            ./languages/cpp/README.md
+            ./languages/cpp/ExampleUse.md
