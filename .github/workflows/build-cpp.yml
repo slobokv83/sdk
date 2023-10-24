@@ -99,9 +99,9 @@ jobs:
           path: languages/cpp/build
         if: contains(matrix.settings.os, 'windows')
 
-      - name: Create Build folder
-        if: "!contains(matrix.settings.os, 'windows')"
-        run: mkdir languages/cpp/build
+      # - name: Create Build folder
+      #   if: "!contains(matrix.settings.os, 'windows')"
+      #   run: mkdir languages/cpp/build
 
       - name: Create libs folder
         run: mkdir libs
