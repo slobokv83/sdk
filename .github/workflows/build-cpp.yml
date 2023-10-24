@@ -127,14 +127,17 @@ jobs:
           Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip" -OutFile "boost_1_83_0.zip"
           Expand-Archive -Path "boost_1_83_0.zip" -DestinationPath ".\"
           Set-Location -Path ".\boost_1_83_0"
-          # .\bootstrap.bat
-          # .\b2 install --prefix=${{ env.LIBS_PATH }}
+          .\bootstrap.bat
+          .\b2 install --prefix=${{ env.LIBS_PATH }}
 
       - name: List libs folder
         run: dir libs
 
       - name: List libs\json-3.11.2 folder
         run: dir libs/boost_1_83_0
+
+      - name: List include folder
+        run: dir libs/include
 
       # - name: Build C++ Project
       #   # if: "!contains(matrix.settings.os, 'windows')"
