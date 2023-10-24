@@ -134,7 +134,7 @@ jobs:
         run: dir libs
 
       - name: List libs\json-3.11.2 folder
-        run: dir libs\json-3.11.2
+        run: dir libs/json-3.11.2/include
 
       # - name: Build C++ Project
       #   # if: "!contains(matrix.settings.os, 'windows')"
