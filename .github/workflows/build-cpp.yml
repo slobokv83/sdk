@@ -123,7 +123,7 @@ jobs:
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           Invoke-WebRequest -Uri "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" -OutFile "v3.11.2.zip"
-          Expand-Archive -Path "v3.11.2.zip" -DestinationPath ".\json-3.11.2"
+          Expand-Archive -Path "v3.11.2.zip" -DestinationPath ".\"
           # Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz" -OutFile "boost_1_83_0.tar.gz"
           # Expand-Archive -Path "boost_1_83_0.tar.gz" -DestinationPath ".\boost_1_83_0"
           # Set-Location -Path ".\boost_1_83_0"
