@@ -130,6 +130,12 @@ jobs:
           # .\bootstrap.bat
           # .\b2 install --prefix=${{ env.LIBS_PATH }}
 
+      - name: List libs folder
+        run: dir libs
+
+      - name: List libs\json-3.11.2 folder
+        run: dir libs\json-3.11.2
+
       # - name: Build C++ Project
       #   # if: "!contains(matrix.settings.os, 'windows')"
       #   working-directory: languages/cpp/build
