@@ -98,14 +98,21 @@ jobs:
           name: libbitwarden_c_files-x86_64-pc-windows-msvc
           path: languages/cpp/build
         if: contains(matrix.settings.os, 'windows')
+
       - name: Create Build folder
-        run: mkdir -p languages/cpp/build
+        run: |
+          if (-not (Test-Path -Path "languages/cpp/build")) {
+            mkdir "languages/cpp/build"
+          }
 
       - name: Create libs folder
-        run: mkdir -p libs
+        run: |
+          if (-not (Test-Path -Path "libs")) {
+            mkdir "libs"
+          }
 
       - name: Download Dependencies
-        # if: "!contains(matrix.settings.os, 'windows')"
+        if: "!contains(matrix.settings.os, 'windows')"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
@@ -115,6 +122,18 @@ jobs:
           cd boost_1_83_0
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           ./b2 install
+
+      - name: Download Windows Dependencies
+        if: "contains(matrix.settings.os, 'windows')"
+        working-directory: ${{ env.LIBS_PATH }}
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz" -OutFile "v3.11.2.tar.gz"
+          Expand-Archive -Path "v3.11.2.tar.gz" -DestinationPath ".\json-3.11.2"
+          Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz" -OutFile "boost_1_83_0.tar.gz"
+          Expand-Archive -Path "boost_1_83_0.tar.gz" -DestinationPath ".\boost_1_83_0"
+          Set-Location -Path ".\boost_1_83_0"
+          .\bootstrap.bat
+          .\b2 install --prefix=${{ env.LIBS_PATH }}
 
       - name: Build C++ Project
         # if: "!contains(matrix.settings.os, 'windows')"
