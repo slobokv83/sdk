@@ -124,17 +124,17 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" -OutFile "v3.11.2.zip"
           Expand-Archive -Path "v3.11.2.zip" -DestinationPath ".\"
-          # Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz" -OutFile "boost_1_83_0.tar.gz"
-          # Expand-Archive -Path "boost_1_83_0.tar.gz" -DestinationPath ".\boost_1_83_0"
-          # Set-Location -Path ".\boost_1_83_0"
-          # .\bootstrap.bat
-          # .\b2 install --prefix=${{ env.LIBS_PATH }}
+          Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip" -OutFile "boost_1_83_0.zip"
+          Expand-Archive -Path "boost_1_83_0.zip" -DestinationPath ".\boost_1_83_0"
+          Set-Location -Path ".\boost_1_83_0"
+          .\bootstrap.bat
+          .\b2 install --prefix=${{ env.LIBS_PATH }}
 
       - name: List libs folder
         run: dir libs
 
       - name: List libs\json-3.11.2 folder
-        run: dir libs/json-3.11.2/include
+        run: dir libs/boost_1_83_0
 
       # - name: Build C++ Project
       #   # if: "!contains(matrix.settings.os, 'windows')"
