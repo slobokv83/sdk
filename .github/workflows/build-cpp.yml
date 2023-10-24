@@ -6,8 +6,8 @@ on:
   #     - master
   workflow_dispatch:
 
-# env:
-#   LIBS_PATH: ${{ github.workspace }}/libs
+env:
+  LIBS_PATH: ${{ github.workspace }}/libs
 
 jobs:
   generate_schemas:
@@ -103,37 +103,45 @@ jobs:
       #   if: "!contains(matrix.settings.os, 'windows')"
       #   run: mkdir languages/cpp/build
 
-      # - name: Create libs folder
-      #   run: mkdir libs
+      - name: Create libs folder
+        run: mkdir libs
 
-      # - name: Download Dependencies
-      #   if: "!contains(matrix.settings.os, 'windows')"
-      #   working-directory: ${{ env.LIBS_PATH }}
-      #   run: |
-      #     wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
-      #     tar -xvf v3.11.2.tar.gz
-      #     wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
-      #     tar -xvf boost_1_83_0.tar.gz
-      #     cd boost_1_83_0
-      #     ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
-      #     ./b2 install
+      - name: Download Dependencies
+        if: "!contains(matrix.settings.os, 'windows')"
+        working-directory: ${{ env.LIBS_PATH }}
+        run: |
+          wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+          tar -xvf v3.11.2.tar.gz
+          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+          tar -xvf boost_1_83_0.tar.gz
+          cd boost_1_83_0
+          ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
+          ./b2 install
 
-      # - name: Download Windows Dependencies
-      #   if: "contains(matrix.settings.os, 'windows')"
-      #   working-directory: ${{ env.LIBS_PATH }}
-      #   run: |
-      #     Invoke-WebRequest -Uri "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" -OutFile "v3.11.2.zip"
-      #     Expand-Archive -Path "v3.11.2.zip" -DestinationPath ".\"
-      #     Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip" -OutFile "boost_1_83_0.zip"
-      #     Expand-Archive -Path "boost_1_83_0.zip" -DestinationPath ".\"
-      #     Set-Location -Path ".\boost_1_83_0"
-      #     .\bootstrap.bat
-      #     .\b2 install --prefix=${{ env.LIBS_PATH }}
+      - name: Download Windows Dependencies
+        if: "contains(matrix.settings.os, 'windows')"
+        working-directory: ${{ env.LIBS_PATH }}
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" -OutFile "v3.11.2.zip"
+          Expand-Archive -Path "v3.11.2.zip" -DestinationPath ".\"
+          Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip" -OutFile "boost_1_83_0.zip"
+          Expand-Archive -Path "boost_1_83_0.zip" -DestinationPath ".\"
+          Set-Location -Path ".\boost_1_83_0"
+          .\bootstrap.bat
+          .\b2 install --prefix=${{ env.LIBS_PATH }}
+
+      - name: list include
+        if: "!contains(matrix.settings.os, 'windows')"
+        run: ls -la ${{ env.LIBS_PATH }}/include
+
+      - name: list include
+        if: "contains(matrix.settings.os, 'windows')"
+        run: dir ${{ env.LIBS_PATH }}/include
 
       - name: Build C++ Project
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
       - name: Upload C++ package
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3

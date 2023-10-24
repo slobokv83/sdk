@@ -4,19 +4,16 @@ project(BitwardenClient)
 set(CMAKE_CXX_STANDARD 20)
 
 # Set placeholders to be passed from command line
-# set(NLOHMANN_JSON_INCLUDE_DIR_PLACEHOLDER ${NLOHMANN})
-# set(BOOST_INCLUDE_DIR_PLACEHOLDER ${BOOST})
+set(NLOHMANN_JSON_INCLUDE_DIR_PLACEHOLDER ${NLOHMANN})
+set(BOOST_INCLUDE_DIR_PLACEHOLDER ${BOOST})
 set(TARGET_INCLUDE_DIR_PLACEHOLDER ${TARGET})
 
 # Specify the locations of nlohmann.json and Boost libraries
-# find_path(NLOHMANN_JSON_INCLUDE_DIR nlohmann/json.hpp HINTS ${NLOHMANN_JSON_INCLUDE_DIR_PLACEHOLDER})
-# find_path(BOOST_INCLUDE_DIR boost/optional.hpp HINTS ${BOOST_INCLUDE_DIR_PLACEHOLDER})
-
-find_package(nlohmann_json 3.11.2 REQUIRED)
-find_package(Boost 1.82.0 REQUIRED)
+find_path(NLOHMANN_JSON_INCLUDE_DIR nlohmann/json.hpp HINTS ${NLOHMANN_JSON_INCLUDE_DIR_PLACEHOLDER})
+find_path(BOOST_INCLUDE_DIR boost/optional.hpp HINTS ${BOOST_INCLUDE_DIR_PLACEHOLDER})
 
 # Include directories for library
-include_directories(include ${BOOST_INCLUDE_DIRS})
+include_directories(include ${NLOHMANN_JSON_INCLUDE_DIR} ${BOOST_INCLUDE_DIR})
 
 # Add library source files
 file(GLOB SOURCES "src/*.cpp")
@@ -36,4 +33,4 @@ add_custom_command(
 )
 
 # Link libraries
-target_link_libraries(BitwardenClient PRIVATE ${LIB_BITWARDEN_C} nlohmann_json::nlohmann_json Boost:Boost)
+target_link_libraries(BitwardenClient PRIVATE ${LIB_BITWARDEN_C})
