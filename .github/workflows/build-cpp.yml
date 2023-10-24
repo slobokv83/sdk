@@ -127,8 +127,8 @@ jobs:
           Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip" -OutFile "boost_1_83_0.zip"
           Expand-Archive -Path "boost_1_83_0.zip" -DestinationPath ".\boost_1_83_0"
           Set-Location -Path ".\boost_1_83_0"
-          .\bootstrap.bat
-          .\b2 install --prefix=${{ env.LIBS_PATH }}
+          # .\bootstrap.bat
+          # .\b2 install --prefix=${{ env.LIBS_PATH }}
 
       - name: List libs folder
         run: dir libs
