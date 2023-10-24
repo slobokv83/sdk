@@ -130,8 +130,11 @@ jobs:
           .\bootstrap.bat
           .\b2 install --prefix=${{ env.LIBS_PATH }}
 
-      - name: Create libs folder
+      - name: list boost folder
         run: dir libs/include/boost-1_83
+
+      - name: list boost/boost folder
+        run: dir libs/include/boost-1_83/boost
 
       - name: Build C++ Project
         working-directory: languages/cpp/build
