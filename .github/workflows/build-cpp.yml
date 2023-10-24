@@ -10,11 +10,11 @@ env:
   LIBS_PATH: ${{ github.workspace }}/libs
 
 jobs:
-  generate_schemas:
-    uses: ./.github/workflows/generate_schemas.yml
+  # generate_schemas:
+  #   uses: ./.github/workflows/generate_schemas.yml
 
-  build_rust:
-    uses: ./.github/workflows/build-rust-cross-platform.yml
+  # build_rust:
+  #   uses: ./.github/workflows/build-rust-cross-platform.yml
 
   build_cpp:
     name: Build C++
@@ -22,43 +22,43 @@ jobs:
     strategy:
       matrix:
         settings:
-          - os: macos-12
-            target: x86_64-apple-darwin
-            compiler: llvm
-            prefix: lib
-            extension: dylib
-            architecture: x86_64
-          - os: macos-12
-            target: aarch64-apple-darwin
-            compiler: llvm
-            prefix: lib
-            extension: dylib
-            architecture: arm64
-          - os: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-            compiler: llvm
-            prefix: lib
-            extension: so
-            architecture: x86_64
+          # - os: macos-12
+          #   target: x86_64-apple-darwin
+          #   compiler: llvm
+          #   prefix: lib
+          #   extension: dylib
+          #   architecture: x86_64
+          # - os: macos-12
+          #   target: aarch64-apple-darwin
+          #   compiler: llvm
+          #   prefix: lib
+          #   extension: dylib
+          #   architecture: arm64
+          # - os: ubuntu-22.04
+          #   target: x86_64-unknown-linux-gnu
+          #   compiler: llvm
+          #   prefix: lib
+          #   extension: so
+          #   architecture: x86_64
           - os: windows-2022
             target: x86_64-pc-windows-msvc
             compiler: msvc
             prefix: ""
             extension: dll
             architecture: x86_64
-    needs:
-      - generate_schemas
-      - build_rust
+    # needs:
+    #   - generate_schemas
+    #   - build_rust
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
-      - name: Download C++ schemas artifact
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: schemas.hpp
-          path: languages/cpp/include
+      # - name: Download C++ schemas artifact
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: schemas.hpp
+      #     path: languages/cpp/include
 
       - name: Setup C++
         uses: aminya/setup-cpp@v1
@@ -71,33 +71,33 @@ jobs:
           cppcheck: true
           clangtidy: true
 
-      - name: Download x86_64-apple-darwin files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-x86_64-apple-darwin
-          path: languages/cpp/build
-        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='x86_64'
+      # - name: Download x86_64-apple-darwin files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-x86_64-apple-darwin
+      #     path: languages/cpp/build
+      #   if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='x86_64'
 
-      - name: Download aarch64-apple-darwin files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-aarch64-apple-darwin
-          path: languages/cpp/build
-        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
+      # - name: Download aarch64-apple-darwin files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-aarch64-apple-darwin
+      #     path: languages/cpp/build
+      #   if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
-      - name: Download x86_64-unknown-linux-gnu files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-x86_64-unknown-linux-gnu
-          path: languages/cpp/build
-        if: contains(matrix.settings.os, 'ubuntu')
+      # - name: Download x86_64-unknown-linux-gnu files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-x86_64-unknown-linux-gnu
+      #     path: languages/cpp/build
+      #   if: contains(matrix.settings.os, 'ubuntu')
 
-      - name: Download x86_64-pc-windows-msvc files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: libbitwarden_c_files-x86_64-pc-windows-msvc
-          path: languages/cpp/build
-        if: contains(matrix.settings.os, 'windows')
+      # - name: Download x86_64-pc-windows-msvc files
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: libbitwarden_c_files-x86_64-pc-windows-msvc
+      #     path: languages/cpp/build
+      #   if: contains(matrix.settings.os, 'windows')
 
       # - name: Create Build folder
       #   if: "!contains(matrix.settings.os, 'windows')"
@@ -106,17 +106,17 @@ jobs:
       - name: Create libs folder
         run: mkdir libs
 
-      - name: Download Dependencies
-        if: "!contains(matrix.settings.os, 'windows')"
-        working-directory: ${{ env.LIBS_PATH }}
-        run: |
-          wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
-          tar -xvf v3.11.2.tar.gz
-          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
-          tar -xvf boost_1_83_0.tar.gz
-          cd boost_1_83_0
-          ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
-          ./b2 install
+      # - name: Download Dependencies
+      #   if: "!contains(matrix.settings.os, 'windows')"
+      #   working-directory: ${{ env.LIBS_PATH }}
+      #   run: |
+      #     wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+      #     tar -xvf v3.11.2.tar.gz
+      #     wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+      #     tar -xvf boost_1_83_0.tar.gz
+      #     cd boost_1_83_0
+      #     ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
+      #     ./b2 install
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
@@ -129,6 +129,9 @@ jobs:
           Set-Location -Path ".\boost_1_83_0"
           .\bootstrap.bat
           .\b2 install --prefix=${{ env.LIBS_PATH }}
+
+      - name: Create libs folder
+        run: dir libs/include/boost_1_83_0
 
       - name: Build C++ Project
         working-directory: languages/cpp/build
