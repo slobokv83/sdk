@@ -130,14 +130,14 @@ jobs:
         if: "!contains(matrix.settings.os, 'windows')"
         working-directory: languages/cpp/build/${{ matrix.settings.target }}
         run: |
-          cmake ../../ -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
+          cmake ../../ -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
 
       - name: Build Windows C++ Project
         if: "contains(matrix.settings.os, 'windows')"
         working-directory: languages/cpp/build/${{ matrix.settings.target }}
         run: |
-          cmake ../../ -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include/boost-1_83 -DTARGET=./${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
+          cmake ../../ -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include/boost-1_83 -DTARGET=./build/${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
           copy ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }}
 
