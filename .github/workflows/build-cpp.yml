@@ -22,34 +22,30 @@ jobs:
     strategy:
       matrix:
         settings:
-          # - os: macos-12
-          #   target: x86_64-apple-darwin
-          #   compiler: llvm
-          #   prefix: lib
-          #   extension: dylib
-          #   architecture: x86_64
-          #   generator: ""
+          - os: macos-12
+            target: x86_64-apple-darwin
+            compiler: llvm
+            prefix: lib
+            extension: dylib
+            architecture: x86_64
           - os: macos-12
             target: aarch64-apple-darwin
             compiler: llvm
             prefix: lib
             extension: dylib
             architecture: arm64
-            generator: "-GXcode"
-          # - os: ubuntu-22.04
-          #   target: x86_64-unknown-linux-gnu
-          #   compiler: llvm
-          #   prefix: lib
-          #   extension: so
-          #   architecture: x86_64
-          #   generator: ""
-          # - os: windows-2022
-          #   target: x86_64-pc-windows-msvc
-          #   compiler: msvc
-          #   prefix: ""
-          #   extension: dll
-          #   architecture: x86_64
-          #   generator: ""
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            compiler: llvm
+            prefix: lib
+            extension: so
+            architecture: x86_64
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            compiler: msvc
+            prefix: ""
+            extension: dll
+            architecture: x86_64
     needs:
       - generate_schemas
       - build_rust
@@ -131,11 +127,19 @@ jobs:
           .\b2 install --prefix=${{ env.LIBS_PATH }}
 
       - name: Build C++ Project
-        if: "!contains(matrix.settings.os, 'windows')"
+        if: "!contains(matrix.settings.os, 'windows') && matrix.settings.architecture=='x86_64'"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} ${{ matrix.settings.generator }}
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
+
+      - name: Build Mac Arm C++ Project
+        if: "matrix.settings.architecture=='arm64'"
+        working-directory: languages/cpp/build
+        run: |
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include/boost-1_83 -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -GXcode
+          cmake --build .
+          cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
       - name: Build Windows C++ Project
         if: "contains(matrix.settings.os, 'windows')"
