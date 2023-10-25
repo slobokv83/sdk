@@ -75,28 +75,28 @@ jobs:
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: libbitwarden_c_files-x86_64-apple-darwin
-          path: languages/cpp/build
+          path: languages/cpp/build/${{ matrix.settings.target }}
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='x86_64'
 
       - name: Download aarch64-apple-darwin files
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: libbitwarden_c_files-aarch64-apple-darwin
-          path: languages/cpp/build
+          path: languages/cpp/build/${{ matrix.settings.target }}
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
       - name: Download x86_64-unknown-linux-gnu files
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: libbitwarden_c_files-x86_64-unknown-linux-gnu
-          path: languages/cpp/build
+          path: languages/cpp/build/${{ matrix.settings.target }}
         if: contains(matrix.settings.os, 'ubuntu')
 
       - name: Download x86_64-pc-windows-msvc files
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: libbitwarden_c_files-x86_64-pc-windows-msvc
-          path: languages/cpp/build
+          path: languages/cpp/build/${{ matrix.settings.target }}
         if: contains(matrix.settings.os, 'windows')
 
       - name: Create libs folder
@@ -128,16 +128,16 @@ jobs:
 
       - name: Build C++ Project
         if: "!contains(matrix.settings.os, 'windows')"
-        working-directory: languages/cpp/build
+        working-directory: languages/cpp/build/${{ matrix.settings.target }}
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
+          cmake ../../ -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
 
       - name: Build Windows C++ Project
         if: "contains(matrix.settings.os, 'windows')"
-        working-directory: languages/cpp/build
+        working-directory: languages/cpp/build/${{ matrix.settings.target }}
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include/boost-1_83 -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
+          cmake ../../ -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include/boost-1_83 -DTARGET=./${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
           copy ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }}
 
@@ -146,8 +146,8 @@ jobs:
         with:
           name: Bitwarden-SDK-${{ matrix.settings.target }}
           path: |
-            ./languages/cpp/build/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }}
-            ./languages/cpp/build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
+            ./languages/cpp/build/${{ matrix.settings.target }}/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }}
+            ./languages/cpp/build/${{ matrix.settings.target }}/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
             ./languages/cpp/include/
             ./languages/cpp/examples/
             ./languages/cpp/README.md
