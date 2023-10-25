@@ -138,9 +138,9 @@ jobs:
         run: |
           which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-      - name: Install Xcode Command Line Tools (macOS only)
-        if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
-        run: sudo xcode-select --install
+      # - name: Install Xcode Command Line Tools (macOS only)
+      #   if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
+      #   run: sudo xcode-select --install
 
       - name: Install ARM Toolchain (macOS only)
         if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
