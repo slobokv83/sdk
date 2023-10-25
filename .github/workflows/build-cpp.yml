@@ -160,8 +160,8 @@ jobs:
         with:
           name: Bitwarden-SDK-${{ matrix.settings.target }}
           path: |
-            ./languages/cpp/build/Debug/BitwardenClient.$dll
-            ./languages/cpp/build/bitwarden_c.$dll
+            ./languages/cpp/build/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }}
+            ./languages/cpp/build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
             ./languages/cpp/include/
             ./languages/cpp/examples/
             ./languages/cpp/README.md
