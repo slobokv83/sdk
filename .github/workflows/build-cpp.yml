@@ -84,6 +84,19 @@ jobs:
           vcpkg: true
           cppcheck: true
           clangtidy: true
+          architecture: ${{ matrix.settings.architecture }}
+
+      # - name: Setup C++ for ARM
+      #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
+      #   env:
+      #     LLVM_VERSION: 17.0.1
+      #   run: |
+      #     export LLVM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Darwin
+      #     curl -o llvm.tar.gz https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/${{ env.LLVM_NAME }}.tar.gz
+      #     tar -xf llvm.tar.gz -C $HOME
+      #     cd $HOME/${{ env.LLVM_NAME }}/bin
+      #     find . -type f -perm +0111 | xargs xattr -d com.apple.quarantine
+      #     echo "$HOME/${{ env.LLVM_NAME }}/bin" >> $GITHUB_PATH
 
       # - name: Download x86_64-apple-darwin files
       #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
@@ -136,7 +149,7 @@ jobs:
             libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
 
       - name: Download Dependencies
-        if: "!contains(matrix.settings.os, 'windows') && steps.cache.outputs.cache-hit != 'true'"
+        if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true' && matrix.settings.architecture=='x86_64'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
