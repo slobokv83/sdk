@@ -148,7 +148,7 @@ jobs:
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
             ./b2 install
           else
-            ./b2 architecture=arm install
+            ./b2 architecture=arm  address-model=64 install
           fi
 
       - name: Cache boost and json
