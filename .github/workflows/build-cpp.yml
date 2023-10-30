@@ -33,7 +33,7 @@ jobs:
           #   architecture: x86_64
           - os: macos-12
             target: aarch64-apple-darwin
-            compiler: none
+            compiler: llvm
             prefix: lib
             extension: dylib
             architecture: arm64
@@ -84,6 +84,7 @@ jobs:
           vcpkg: true
           cppcheck: true
           clangtidy: true
+          architecture: ${{ matrix.settings.architecture }}
 
       - name: Setup C++ for ARM
         if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
