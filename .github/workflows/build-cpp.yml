@@ -127,11 +127,13 @@ jobs:
       - name: Create libs folder
         run: mkdir libs
 
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache@v3
         id: cache
         with:
           path: ${{ env.LIBS_PATH }}
           key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
+          restore-keys: |
+            libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
 
       - name: Download Dependencies
         if: "!contains(matrix.settings.os, 'windows') && steps.cache.outputs.cache-hit != 'true'"
