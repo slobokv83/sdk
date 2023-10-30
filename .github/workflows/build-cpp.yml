@@ -131,7 +131,7 @@ jobs:
         id: cache
         with:
           path: ${{ env.LIBS_PATH }}
-          key: libs
+          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
 
       - name: Download Dependencies
         if: "!contains(matrix.settings.os, 'windows') && steps.cache.outputs.cache-hit != 'true'"
@@ -143,13 +143,17 @@ jobs:
           tar -xvf boost_1_83_0.tar.gz
           cd boost_1_83_0
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
-          ./b2 install
+          if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
+            ./b2 install
+          else
+            ./b2 architecture=arm install
+          fi
 
       - name: Cache boost and json
         uses: actions/cache@v3.3.2
         with:
           path: ${{ env.LIBS_PATH }}
-          key: libs
+          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
