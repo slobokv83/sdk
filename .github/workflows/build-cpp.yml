@@ -120,7 +120,7 @@ jobs:
           key: libs-arm
 
       - name: Download Dependencies
-        if: "!contains(matrix.settings.os, 'windows')" && steps.cache.outputs.cache-hit != 'true'
+        if: "!contains(matrix.settings.os, 'windows') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
