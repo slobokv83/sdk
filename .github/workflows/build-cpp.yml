@@ -138,10 +138,6 @@ jobs:
         run: |
           which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-      # - name: Install Xcode Command Line Tools (macOS only)
-      #   if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
-      #   run: sudo xcode-select --install
-
       - name: Install ARM Toolchain (macOS only)
         if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
         run: brew tap ArmMbed/homebrew-formulae && brew install arm-none-eabi-gcc
@@ -150,7 +146,7 @@ jobs:
         if: "matrix.settings.architecture=='arm64'"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_C_COMPILER=arm-none-eabi-gcc -DCMAKE_CXX_COMPILER=arm-none-eabi-g++
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -D CMAKE_OSX_ARCHITECTURES=arm64
           cmake --build .
           cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
