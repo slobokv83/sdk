@@ -13,8 +13,8 @@ env:
   LIBS_PATH: ${{ github.workspace }}/libs
 
 jobs:
-  generate_schemas:
-    uses: ./.github/workflows/generate_schemas.yml
+  # generate_schemas:
+  #   uses: ./.github/workflows/generate_schemas.yml
 
   # build_rust:
   #   uses: ./.github/workflows/build-rust-cross-platform.yml
@@ -49,22 +49,33 @@ jobs:
     #         prefix: ""
     #         extension: dll
     #         architecture: x86_64
-    needs:
-      - generate_schemas
+    # needs:
+    #   - generate_schemas
     # - build_rust
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
+      # - name: Download C++ schemas artifact
+      #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      #   with:
+      #     name: schemas.hpp
+      #     path: languages/cpp/include
+
       - name: Download C++ schemas artifact
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        uses: dawidd6/action-download-artifact@v2
         with:
+          repo: slobokv83/sdk
+          workflow: build-rust-cross-platform.yml
+          search_artifacts: true
+          run_id: 6698638146
           name: schemas.hpp
           path: languages/cpp/include
+        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
       - name: Setup C++
-        uses: aminya/setup-cpp@0.36.0
+        uses: aminya/setup-cpp@v0.36.0
         with:
           compiler: ${{ matrix.settings.compiler }}
           vcvarsall: ${{ contains(matrix.settings.os, 'windows') }}
