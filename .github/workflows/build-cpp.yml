@@ -27,19 +27,19 @@ jobs:
         settings:
           # - os: macos-12
           #   target: x86_64-apple-darwin
-          #   compiler: llvm
+          #   compiler: llvm-17.0.1
           #   prefix: lib
           #   extension: dylib
           #   architecture: x86_64
           - os: macos-12
             target: aarch64-apple-darwin
-            compiler: llvm
+            compiler: llvm-17.0.1
             prefix: lib
             extension: dylib
             architecture: arm64
     #       - os: ubuntu-22.04
     #         target: x86_64-unknown-linux-gnu
-    #         compiler: llvm
+    #         compiler: llvm-17.0.1
     #         prefix: lib
     #         extension: so
     #         architecture: x86_64
@@ -75,6 +75,7 @@ jobs:
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
       - name: Setup C++
+        if: "matrix.settings.architecture=='x86_64'"
         uses: aminya/setup-cpp@v0.36.0
         with:
           compiler: ${{ matrix.settings.compiler }}
@@ -84,19 +85,18 @@ jobs:
           vcpkg: true
           cppcheck: true
           clangtidy: true
-          architecture: arm
 
-      # - name: Setup C++ for ARM
-      #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
-      #   env:
-      #     LLVM_VERSION: 17.0.1
-      #   run: |
-      #     export LLVM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Darwin
-      #     curl -o llvm.tar.gz https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/${{ env.LLVM_NAME }}.tar.gz
-      #     tar -xf llvm.tar.gz -C $HOME
-      #     cd $HOME/${{ env.LLVM_NAME }}/bin
-      #     find . -type f -perm +0111 | xargs xattr -d com.apple.quarantine
-      #     echo "$HOME/${{ env.LLVM_NAME }}/bin" >> $GITHUB_PATH
+      - name: Setup C++ for ARM
+        if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
+        env:
+          LLVM_VERSION: 17.0.1
+        run: |
+          export LLVM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Darwin
+          curl -o llvm.tar.gz https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/${{ env.LLVM_NAME }}.tar.gz
+          tar -xf llvm.tar.gz -C $HOME
+          cd $HOME/${{ env.LLVM_NAME }}/bin
+          find . -type f -perm +0111 | xargs xattr -d com.apple.quarantine
+          echo "$HOME/${{ env.LLVM_NAME }}/bin" >> $GITHUB_PATH
 
       # - name: Download x86_64-apple-darwin files
       #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
