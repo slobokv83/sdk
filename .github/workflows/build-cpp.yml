@@ -117,7 +117,7 @@ jobs:
         id: cache
         with:
           path: ${{ env.LIBS_PATH }}
-          key: libs-arm
+          key: libs
 
       - name: Download Dependencies
         if: "!contains(matrix.settings.os, 'windows') && steps.cache.outputs.cache-hit != 'true'"
@@ -136,8 +136,6 @@ jobs:
         with:
           path: ${{ env.LIBS_PATH }}
           key: libs
-          restore-keys: |
-            libs-arm
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
