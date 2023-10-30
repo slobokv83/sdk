@@ -84,7 +84,7 @@ jobs:
           vcpkg: true
           cppcheck: true
           clangtidy: true
-          architecture: ${{ matrix.settings.architecture }}
+          architecture: arm
 
       # - name: Setup C++ for ARM
       #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
