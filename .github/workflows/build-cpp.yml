@@ -61,7 +61,7 @@ jobs:
           path: languages/cpp/include
 
       - name: Setup C++
-        uses: aminya/setup-cpp@v1
+        uses: aminya/setup-cpp@0.36.0
         with:
           compiler: ${{ matrix.settings.compiler }}
           vcvarsall: ${{ contains(matrix.settings.os, 'windows') }}
@@ -117,6 +117,7 @@ jobs:
         id: cache
         with:
           path: ${{ env.LIBS_PATH }}
+          key: libs
 
       - name: Download Dependencies
         if: "!contains(matrix.settings.os, 'windows') && steps.cache.outputs.cache-hit != 'true'"
@@ -134,6 +135,7 @@ jobs:
         uses: actions/cache@v3.3.2
         with:
           path: ${{ env.LIBS_PATH }}
+          key: libs
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
@@ -154,14 +156,14 @@ jobs:
           cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
 
-      - name: Install Homebrew (macOS only)
-        if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
-        run: |
-          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+      # - name: Install Homebrew (macOS only)
+      #   if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
+      #   run: |
+      #     which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-      - name: Install ARM Toolchain (macOS only)
-        if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
-        run: brew tap ArmMbed/homebrew-formulae && brew install arm-none-eabi-gcc
+      # - name: Install ARM Toolchain (macOS only)
+      #   if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
+      #   run: brew tap ArmMbed/homebrew-formulae && brew install arm-none-eabi-gcc
 
       - name: Build Mac Arm C++ Project
         if: "matrix.settings.architecture=='arm64'"
