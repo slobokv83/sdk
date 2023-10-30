@@ -86,7 +86,7 @@ jobs:
       #   if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
       - name: Download aarch64-apple-darwin files
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        uses: dawidd6/action-download-artifact@v2
         with:
           repo: slobokv83/sdk
           workflow: build-rust-cross-platform.yml
@@ -113,8 +113,14 @@ jobs:
       - name: Create libs folder
         run: mkdir libs
 
+      - uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: ${{ env.LIBS_PATH }}
+          key: libs-arm
+
       - name: Download Dependencies
-        if: "!contains(matrix.settings.os, 'windows')"
+        if: "!contains(matrix.settings.os, 'windows')" && steps.cache.outputs.cache-hit != 'true'
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
@@ -124,6 +130,14 @@ jobs:
           cd boost_1_83_0
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           ./b2 install
+
+      - name: Cache boost and json
+        uses: actions/cache@v3.3.2
+        with:
+          path: ${{ env.LIBS_PATH }}
+          key: libs
+          restore-keys: |
+            libs-arm
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
