@@ -33,7 +33,7 @@ jobs:
           #   architecture: x86_64
           - os: macos-12
             target: aarch64-apple-darwin
-            compiler: llvm-17.0.1
+            compiler: none
             prefix: lib
             extension: dylib
             architecture: arm64
@@ -75,7 +75,6 @@ jobs:
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
       - name: Setup C++
-        if: "matrix.settings.architecture=='x86_64'"
         uses: aminya/setup-cpp@v0.36.0
         with:
           compiler: ${{ matrix.settings.compiler }}
