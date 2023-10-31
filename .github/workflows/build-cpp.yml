@@ -33,7 +33,7 @@ jobs:
           #   architecture: x86_64
           - os: macos-12
             target: aarch64-apple-darwin
-            compiler: llvm
+            compiler: llvm-17.0.1
             prefix: lib
             extension: dylib
             architecture: arm64
@@ -74,6 +74,22 @@ jobs:
           path: languages/cpp/include
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/vcpkg
+            ./build/vcpkg_installed
+            ${{ env.HOME }}/.cache/vcpkg/archives
+            ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
+            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+            ${{ env.APPDATA }}\vcpkg\archives
+          key: cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
+          restore-keys: |
+            cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
+            cpp-${{ matrix.settings.os }}-
+            cpp-
+
       - name: Setup C++
         uses: aminya/setup-cpp@v0.36.0
         with:
@@ -86,17 +102,17 @@ jobs:
           clangtidy: true
           architecture: ${{ matrix.settings.architecture }}
 
-      - name: Setup C++ for ARM
-        if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
-        env:
-          LLVM_VERSION: 17.0.1
-        run: |
-          export LLVM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Linux-AArch64
-          curl -o llvm.tar.gz https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/$LLVM_NAME.tar.gz
-          tar -xf llvm.tar.gz -C $HOME
-          cd $HOME/${{ env.LLVM_NAME }}/bin
-          find . -type f -perm +0111 | xargs xattr -d com.apple.quarantine
-          echo "$HOME/${{ env.LLVM_NAME }}/bin" >> $GITHUB_PATH
+      # - name: Setup C++ for ARM
+      #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
+      #   env:
+      #     LLVM_VERSION: 17.0.1
+      #   run: |
+      #     export LLVM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Linux-AArch64
+      #     curl -o llvm.tar.gz https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/$LLVM_NAME.tar.gz
+      #     tar -xf llvm.tar.gz -C $HOME
+      #     cd $HOME/${{ env.LLVM_NAME }}/bin
+      #     find . -type f -perm +0111 | xargs xattr -d com.apple.quarantine
+      #     echo "$HOME/${{ env.LLVM_NAME }}/bin" >> $GITHUB_PATH
 
       # - name: Download x86_64-apple-darwin files
       #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
@@ -140,13 +156,28 @@ jobs:
       - name: Create libs folder
         run: mkdir libs
 
-      - uses: actions/cache@v3
+      - name: Restore libs cache
+        uses: actions/cache@v3
         id: cache
         with:
           path: ${{ env.LIBS_PATH }}
-          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
+          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
           restore-keys: |
-            libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
+            libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
+            libs-${{ matrix.settings.os }}-
+            libs-
+
+      - name: Install Homebrew (macOS only)
+        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
+        run: |
+          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+      - name: Install ARM Toolchain (macOS only)
+        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
+        run: |
+          brew install --cask gcc-arm-embedded
+      # brew tap ArmMbed/homebrew-formulae
+      # brew install arm-none-eabi-gcc
 
       - name: Download Dependencies
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
@@ -161,14 +192,15 @@ jobs:
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
             ./b2 install
           else
-            ./b2 architecture=arm  address-model=64 toolset=clang install
+            echo "using gcc : arm : arm-none-eabi-gcc ;" > ./user-config.jam
+            ./b2 architecture=arm  address-model=64 toolset=gcc-arm install
           fi
 
       - name: Cache boost and json
         uses: actions/cache@v3.3.2
         with:
           path: ${{ env.LIBS_PATH }}
-          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}
+          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
@@ -188,15 +220,6 @@ jobs:
         run: |
           cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
-
-      # - name: Install Homebrew (macOS only)
-      #   if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
-      #   run: |
-      #     which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
-      # - name: Install ARM Toolchain (macOS only)
-      #   if: contains(matrix.settings.os, 'macos') && !contains(matrix.settings.architecture, 'x86_64')
-      #   run: brew tap ArmMbed/homebrew-formulae && brew install arm-none-eabi-gcc
 
       - name: Build Mac Arm C++ Project
         if: "matrix.settings.architecture=='arm64'"
