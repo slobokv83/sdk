@@ -192,8 +192,7 @@ jobs:
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
             ./b2 install
           else
-            echo "using gcc : arm : arm-none-eabi-gcc ;" > ./user-config.jam
-            ./b2 architecture=arm  address-model=64 toolset=gcc-arm install
+            ./b2 architecture=arm  address-model=64 toolset=arm-none-eabi-g++ install
           fi
 
       - name: Cache boost and json
@@ -222,10 +221,10 @@ jobs:
           cmake --build .
 
       - name: Build Mac Arm C++ Project
-        if: "matrix.settings.architecture=='arm64'"
+        if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DLLVM_TARGETS_TO_BUILD=ARM
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DLLVM_TARGETS_TO_BUILD=ARM -DCMAKE_C_COMPILER=arm-none-eabi-gcc -DCMAKE_CXX_COMPILER=arm-none-eabi-g++
           cmake --build .
           cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
