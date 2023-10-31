@@ -197,6 +197,16 @@ jobs:
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xf v3.11.2.tar.gz
 
+      - name: Cache libs (json)
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.LIBS_PATH }}
+          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
+          restore-keys: |
+            libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
+            libs-${{ matrix.settings.os }}-
+            libs-
+
       - name: Download Dependencies (boost)
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
@@ -209,8 +219,6 @@ jobs:
             ./b2 install
           else
             echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
-            echo "project : usage-requirements <address-model>64 ;" >> user-config.jam
-
             ./b2 architecture=arm  address-model=64 toolset=gcc-arm install --user-config=user-config.jam
           fi
 
