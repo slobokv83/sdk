@@ -195,7 +195,7 @@ jobs:
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
-          wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+          wget -q https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xf v3.11.2.tar.gz
 
       - name: Cache libs (json)
@@ -212,16 +212,16 @@ jobs:
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
-          wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+          wget -q https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
           tar -xf boost_1_83_0.tar.gz
           cd boost_1_83_0
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
             ./b2 install
           else
-            ./bootstrap.sh --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
+            ./bootstrap.sh --with-toolset=clang-darwin --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
             # echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
-            ./b2 architecture=arm  address-model=64 install
+            ./b2 architecture=arm target-os=darwin address-model=64 toolset=clang-darwin install
           fi
 
       # - name: Cache boost and json
