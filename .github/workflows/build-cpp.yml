@@ -84,6 +84,7 @@ jobs:
             ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
             ${{ env.LOCALAPPDATA }}\vcpkg\archives
             ${{ env.APPDATA }}\vcpkg\archives
+          key: cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
           restore-keys: |
             cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
             cpp-${{ matrix.settings.os }}-
@@ -168,7 +169,7 @@ jobs:
         run: mkdir libs
 
       - name: Restore libs cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache
         with:
           path: ${{ env.LIBS_PATH }}
