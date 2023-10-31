@@ -168,7 +168,7 @@ jobs:
         if: contains(matrix.settings.os, 'windows')
 
       - name: Create libs folder
-        run: mkdir libs
+        run: mkdir -p libs/nlohmann_json libs/boost
 
       # - name: Restore libs cache
       #   uses: actions/cache/restore@v3
