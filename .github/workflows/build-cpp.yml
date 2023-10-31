@@ -112,7 +112,9 @@ jobs:
             ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
             ${{ env.LOCALAPPDATA }}\vcpkg\archives
             ${{ env.APPDATA }}\vcpkg\archives
-          key: cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ matrix.settings.compiler }}-${{ matrix.settings.architecture }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.settings.architecture }}-
 
       # - name: Setup C++ for ARM
       #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
@@ -219,7 +221,7 @@ jobs:
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
             ./b2 install
           else
-            ./bootstrap.sh --with-toolset=clang-darwin --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
+            ./bootstrap.sh --with-toolset=clang --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
             # echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
             ./b2 architecture=arm target-os=darwin address-model=64 toolset=clang install
           fi
