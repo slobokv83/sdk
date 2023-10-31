@@ -215,12 +215,13 @@ jobs:
           wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
           tar -xf boost_1_83_0.tar.gz
           cd boost_1_83_0
-          ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
+            ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
             ./b2 install
           else
-            echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
-            ./b2 architecture=arm  address-model=64 toolset=gcc-arm install --user-config=user-config.jam
+            ./bootstrap.sh --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
+            # echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
+            ./b2 architecture=arm  address-model=64 install
           fi
 
       # - name: Cache boost and json
