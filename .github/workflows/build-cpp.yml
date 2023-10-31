@@ -235,7 +235,7 @@ jobs:
             echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" > user-config.jam
 
             ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
-            ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc linkflags="-lboost_coroutine" # install
+            ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc --without-coroutine # install
           fi
 
       # - name: Cache boost and json
