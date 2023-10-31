@@ -170,26 +170,27 @@ jobs:
       - name: Create libs folder
         run: mkdir libs
 
-      - name: Restore libs cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: ${{ env.LIBS_PATH }}
-          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
-          restore-keys: |
-            libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
-            libs-${{ matrix.settings.os }}-
-            libs-
+      # - name: Restore libs cache
+      #   uses: actions/cache/restore@v3
+      #   id: cache
+      #   with:
+      #     path: ${{ env.LIBS_PATH }}
+      #     key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
+      #     restore-keys: |
+      #       libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
+      #       libs-${{ matrix.settings.os }}-
+      #       libs-
 
-      - name: Install Homebrew (macOS only)
-        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
-        run: |
-          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+      # - name: Install Homebrew (macOS only)
+      #   if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
+      #   run: |
+      #     which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
       - name: Install ARM Toolchain (macOS only)
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
         run: |
-          brew install --cask gcc-arm-embedded
+          brew install --cask gcc-aarch64-embedded
+      #     brew install --cask gcc-arm-embedded
       # brew tap ArmMbed/homebrew-formulae
       # brew install arm-none-eabi-gcc
 
@@ -200,15 +201,15 @@ jobs:
           wget -q https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xf v3.11.2.tar.gz
 
-      - name: Cache libs (json)
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.LIBS_PATH }}
-          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
-          restore-keys: |
-            libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
-            libs-${{ matrix.settings.os }}-
-            libs-
+      # - name: Cache libs (json)
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.LIBS_PATH }}
+      #     key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
+      #     restore-keys: |
+      #       libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
+      #       libs-${{ matrix.settings.os }}-
+      #       libs-
 
       - name: Download Dependencies (boost)
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
@@ -221,9 +222,12 @@ jobs:
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
             ./b2 install
           else
-            ./bootstrap.sh --with-toolset=clang --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
             # echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
-            ./b2 architecture=arm target-os=darwin address-model=64 toolset=clang install
+
+            echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" > user-config.jam
+
+            ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
+            ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
           fi
 
       # - name: Cache boost and json
