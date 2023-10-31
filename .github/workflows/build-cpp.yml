@@ -215,19 +215,27 @@ jobs:
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
-          wget -q https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
-          tar -xf boost_1_83_0.tar.gz
-          cd boost_1_83_0
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
+            wget -q https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+            tar -xf boost_1_83_0.tar.gz
+            cd boost_1_83_0
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
             ./b2 install
           else
+
+            wget -q https://raw.githubusercontent.com/apotocki/boost-iosx/master/scripts/build.sh
+            chmod +x build.sh
+            ./build.sh
+
+            ls -alh artifacts/
+
+
             # echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
 
-            echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" > user-config.jam
+            # echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" > user-config.jam
 
-            ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
-            ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
+            # ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
+            # ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
           fi
 
       # - name: Cache boost and json
