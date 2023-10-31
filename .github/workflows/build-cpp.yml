@@ -232,10 +232,11 @@ jobs:
 
             # echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
 
-            echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" > user-config.jam
+            echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" >> user-config.jam
+            echo "feature = <include>no ;" >> user-config.jam
 
             ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }} cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
-            ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc --with-uuid --with-optional --with-variant # install
+            ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
           fi
 
       # - name: Cache boost and json
@@ -264,11 +265,11 @@ jobs:
           cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }}
           cmake --build .
 
-      - name: Build Mac Arm C++ Project
+      - name: Build Mac Arm64 C++ Project
         if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DLLVM_TARGETS_TO_BUILD=ARM -DCMAKE_C_COMPILER=arm-none-eabi-gcc -DCMAKE_CXX_COMPILER=arm-none-eabi-g++
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/json-3.11.2/include -DBOOST=${{ env.LIBS_PATH }}/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DLLVM_TARGETS_TO_BUILD=ARM -DCMAKE_C_COMPILER=aarch64-none-elf-gcc -DCMAKE_CXX_COMPILER=aarch64-none-elf-g++
           cmake --build .
           cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
