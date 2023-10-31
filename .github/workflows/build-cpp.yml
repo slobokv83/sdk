@@ -222,7 +222,7 @@ jobs:
             echo "feature = <include>no ;" >> user-config.jam
 
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}/boost
-            ./b2 install
+            ./b2 install --prefix=${{ env.LIBS_PATH }}/boost --user-config=user-config.jam
           # else
           #   echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" >> user-config.jam
           #   echo "feature = <include>no ;" >> user-config.jam
