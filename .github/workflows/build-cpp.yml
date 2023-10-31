@@ -74,7 +74,7 @@ jobs:
           path: languages/cpp/include
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
-      - name: Cache
+      - name: Restore C++ cache
         uses: actions/cache@v3
         with:
           path: |
@@ -84,7 +84,6 @@ jobs:
             ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
             ${{ env.LOCALAPPDATA }}\vcpkg\archives
             ${{ env.APPDATA }}\vcpkg\archives
-          key: cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
           restore-keys: |
             cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
             cpp-${{ matrix.settings.os }}-
@@ -101,6 +100,18 @@ jobs:
           cppcheck: true
           clangtidy: true
           architecture: ${{ matrix.settings.architecture }}
+
+      - name: Cache C++
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/vcpkg
+            ./build/vcpkg_installed
+            ${{ env.HOME }}/.cache/vcpkg/archives
+            ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
+            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+            ${{ env.APPDATA }}\vcpkg\archives
+          key: cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
 
       # - name: Setup C++ for ARM
       #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
@@ -179,12 +190,17 @@ jobs:
       # brew tap ArmMbed/homebrew-formulae
       # brew install arm-none-eabi-gcc
 
-      - name: Download Dependencies
+      - name: Download Dependencies (json)
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xf v3.11.2.tar.gz
+
+      - name: Download Dependencies (boost)
+        if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
+        working-directory: ${{ env.LIBS_PATH }}
+        run: |
           wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
           tar -xf boost_1_83_0.tar.gz
           cd boost_1_83_0
@@ -193,14 +209,17 @@ jobs:
             ./b2 install
           else
             echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
+            echo "project : usage-requirements <address-model>64 ;" >> user-config.jam
+
             ./b2 architecture=arm  address-model=64 toolset=gcc-arm install --user-config=user-config.jam
           fi
 
-      - name: Cache boost and json
-        uses: actions/cache@v3.3.2
-        with:
-          path: ${{ env.LIBS_PATH }}
-          key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
+      # - name: Cache boost and json
+      #   if: always()
+      #   uses: actions/cache@v3.3.2
+      #   with:
+      #     path: ${{ env.LIBS_PATH }}
+      #     key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
