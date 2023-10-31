@@ -261,7 +261,7 @@ jobs:
         if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/nlohmann_json/include -DBOOST=${{ env.LIBS_PATH }}/boost/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DLLVM_TARGETS_TO_BUILD=ARM
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/nlohmann_json/include -DBOOST=${{ env.LIBS_PATH }}/boost/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_CXX_COMPILER=/usr/local/bin/aarch64-none-elf-g++
           cmake --build .
           cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
