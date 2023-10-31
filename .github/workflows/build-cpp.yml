@@ -184,15 +184,15 @@ jobs:
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
-          tar -xvf v3.11.2.tar.gz
+          tar -xf v3.11.2.tar.gz
           wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
-          tar -xvf boost_1_83_0.tar.gz
+          tar -xf boost_1_83_0.tar.gz
           cd boost_1_83_0
           ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
             ./b2 install
           else
-            ./b2 architecture=arm  address-model=64 toolset=arm-none-eabi-g++ install
+            ./b2 architecture=arm  address-model=64 toolset=arm-none-eabi-gcc install
           fi
 
       - name: Cache boost and json
