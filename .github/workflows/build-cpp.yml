@@ -192,8 +192,8 @@ jobs:
           if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
             ./b2 install
           else
-            echo "using gcc : arm : arm-none-eabi-g++ ;" > ~/.user-config.jam
-            ./b2 architecture=arm  address-model=64 toolset=gcc install
+            echo "using gcc : arm : /usr/local/bin/arm-none-eabi-g++ ;" > user-config.jam
+            ./b2 architecture=arm  address-model=64 toolset=gcc-arm install --user-config=user-config.jam
           fi
 
       - name: Cache boost and json
