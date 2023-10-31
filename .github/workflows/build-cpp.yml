@@ -225,7 +225,7 @@ jobs:
 
             wget -q https://raw.githubusercontent.com/apotocki/boost-iosx/master/scripts/build.sh
             chmod +x build.sh
-            ./build.sh
+            ./build.sh -osx --no-framework
 
             ls -alh artifacts/
 
