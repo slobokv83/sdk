@@ -141,47 +141,12 @@ jobs:
       - name: Create libs folder
         run: mkdir -p libs/nlohmann_json libs/boost
 
-      # - name: Restore libs cache
-      #   uses: actions/cache/restore@v3
-      #   id: cache
-      #   with:
-      #     path: ${{ env.LIBS_PATH }}
-      #     key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
-      #     restore-keys: |
-      #       libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
-      #       libs-${{ matrix.settings.os }}-
-      #       libs-
-
-      # - name: Install Homebrew (macOS only)
-      #   if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
-      #   run: |
-      #     which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
-      # - name: Install ARM Toolchain (macOS only)
-      #   if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
-      #   run: |
-      #     brew install --cask gcc-aarch64-embedded
-
-      #     brew install --cask gcc-arm-embedded
-      # brew tap ArmMbed/homebrew-formulae
-      # brew install arm-none-eabi-gcc
-
       - name: Download Dependencies (json)
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
         working-directory: ${{ env.LIBS_PATH }}
         run: |
           wget -q https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
           tar -xf v3.11.2.tar.gz --strip-components=1 -C nlohmann_json
-
-      # - name: Cache libs (json)
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ env.LIBS_PATH }}
-      #     key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
-      #     restore-keys: |
-      #       libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
-      #       libs-${{ matrix.settings.os }}-
-      #       libs-
 
       - name: Download Dependencies (boost)
         if: "contains(matrix.settings.os, 'macos') && steps.cache.outputs.cache-hit != 'true'"
@@ -202,13 +167,6 @@ jobs:
           # #   ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }}/boost cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
           # #   ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
           # # fi
-
-      # - name: Cache boost and json
-      #   if: always()
-      #   uses: actions/cache@v3.3.2
-      #   with:
-      #     path: ${{ env.LIBS_PATH }}
-      #     key: libs-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
 
       - name: Download Windows Dependencies
         if: "contains(matrix.settings.os, 'windows')"
