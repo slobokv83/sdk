@@ -81,7 +81,7 @@ jobs:
           LLVM_ARM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Darwin
           wget -q https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/${LLVM_ARM_NAME}.dmg
           hdiutil attach ${LLVM_ARM_NAME}.dmg
-          # sleep 5
+          sleep 5 # wait for dmg to mount
           mkdir -p ${HOME}/llvm
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cd /Volumes/${LLVM_ARM_NAME}
