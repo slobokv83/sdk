@@ -33,7 +33,6 @@ jobs:
           #   architecture: x86_64
           - os: macos-12
             target: aarch64-apple-darwin
-            compiler: llvm
             prefix: lib
             extension: dylib
             architecture: arm64
@@ -75,6 +74,7 @@ jobs:
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
       - name: Setup C++ macos arm64
+        if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
         env:
           LLVM_VERSION: 17.0.1
         run: |
@@ -85,7 +85,6 @@ jobs:
           mkdir -p ${HOME}/llvm
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cd /Volumes/${LLVM_ARM_NAME}
-          ls -alh
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/" ${HOME}/llvm
 
       # - name: Restore C++ cache
@@ -105,6 +104,7 @@ jobs:
       #       cpp-
 
       # - name: Setup C++
+      #   if: "matrix.settings.architecture=='x86_64'
       #   uses: aminya/setup-cpp@v0.36.0
       #   with:
       #     compiler: ${{ matrix.settings.compiler }}
@@ -114,7 +114,6 @@ jobs:
       #     vcpkg: true
       #     cppcheck: true
       #     clangtidy: true
-      #     architecture: ${{ matrix.settings.architecture }}
 
       # - name: Cache C++
       #   uses: actions/cache@v3
@@ -233,18 +232,18 @@ jobs:
           wget -q https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
           tar -xf boost_1_83_0.tar.gz --strip-components=1 -C boost
           cd boost
-          # if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
-            echo "feature = <include>no ;" >> user-config.jam
+          # # if [[ "${{ matrix.settings.architecture }}" == "x86_64" ]]; then
+            # echo "feature = <include>no ;" >> user-config.jam
 
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}/boost
-            ./b2 architecture=arm address-model=64 install --prefix=${{ env.LIBS_PATH }}/boost --user-config=user-config.jam
-          # else
-          #   echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" >> user-config.jam
-          #   echo "feature = <include>no ;" >> user-config.jam
+            ./b2 architecture=arm address-model=64 install --prefix=${{ env.LIBS_PATH }}/boost --user-config=user-config.jam --with-headers
+          # # else
+          # #   echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" >> user-config.jam
+          # #   echo "feature = <include>no ;" >> user-config.jam
 
-          #   ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }}/boost cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
-          #   ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
-          # fi
+          # #   ./bootstrap.sh --with-toolset=gcc --prefix=${{ env.LIBS_PATH }}/boost cxxflags="-arch arm64" cflags="-arch arm64" linkflags="-arch arm64"
+          # #   ./b2 architecture=arm target-os=darwin address-model=64 toolset=gcc install
+          # # fi
 
       # - name: Cache boost and json
       #   if: always()
