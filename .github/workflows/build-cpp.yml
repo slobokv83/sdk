@@ -83,7 +83,7 @@ jobs:
           hdiutil attach ${LLVM_ARM_NAME}.dmg
           mkdir -p ${HOME}/llvm
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
-          cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}
+          cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/*" ${HOME}/llvm
           which clang
 
       # - name: Restore C++ cache
