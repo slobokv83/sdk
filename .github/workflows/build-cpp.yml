@@ -81,27 +81,12 @@ jobs:
           LLVM_ARM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Darwin
           wget -q https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/${LLVM_ARM_NAME}.dmg
           hdiutil attach ${LLVM_ARM_NAME}.dmg
-          sleep 10
+          # sleep 5
           mkdir -p ${HOME}/llvm
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cd /Volumes/${LLVM_ARM_NAME}
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/" ${HOME}/llvm
-
-      # - name: Restore C++ cache
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       ~/vcpkg
-      #       ./build/vcpkg_installed
-      #       ${{ env.HOME }}/.cache/vcpkg/archives
-      #       ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
-      #       ${{ env.LOCALAPPDATA }}\vcpkg\archives
-      #       ${{ env.APPDATA }}\vcpkg\archives
-      #     key: cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-${{ github.run_id }}
-      #     restore-keys: |
-      #       cpp-${{ matrix.settings.os }}-${{ matrix.settings.architecture }}-
-      #       cpp-${{ matrix.settings.os }}-
-      #       cpp-
+          hdiutil detach "/Volumes/${LLVM_ARM_NAME}"
 
       # - name: Setup C++
       #   if: "matrix.settings.architecture=='x86_64'
@@ -114,32 +99,6 @@ jobs:
       #     vcpkg: true
       #     cppcheck: true
       #     clangtidy: true
-
-      # - name: Cache C++
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       ~/vcpkg
-      #       ./build/vcpkg_installed
-      #       ${{ env.HOME }}/.cache/vcpkg/archives
-      #       ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
-      #       ${{ env.LOCALAPPDATA }}\vcpkg\archives
-      #       ${{ env.APPDATA }}\vcpkg\archives
-      #     key: ${{ runner.os }}-${{ matrix.settings.compiler }}-${{ matrix.settings.architecture }}-${{ hashFiles('**/CMakeLists.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ matrix.settings.architecture }}-
-
-      # - name: Setup C++ for ARM
-      #   if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
-      #   env:
-      #     LLVM_VERSION: 17.0.1
-      #   run: |
-      #     export LLVM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Linux-AArch64
-      #     curl -o llvm.tar.gz https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/$LLVM_NAME.tar.gz
-      #     tar -xf llvm.tar.gz -C $HOME
-      #     cd $HOME/${{ env.LLVM_NAME }}/bin
-      #     find . -type f -perm +0111 | xargs xattr -d com.apple.quarantine
-      #     echo "$HOME/${{ env.LLVM_NAME }}/bin" >> $GITHUB_PATH
 
       # - name: Download x86_64-apple-darwin files
       #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
@@ -236,7 +195,7 @@ jobs:
             # echo "feature = <include>no ;" >> user-config.jam
 
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}/boost
-            ./b2 architecture=arm address-model=64 install --prefix=${{ env.LIBS_PATH }}/boost --user-config=user-config.jam --with-headers
+            ./b2 architecture=arm address-model=64 install --prefix=${{ env.LIBS_PATH }}/boost --with-headers # --user-config=user-config.jam
           # # else
           # #   echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" >> user-config.jam
           # #   echo "feature = <include>no ;" >> user-config.jam
