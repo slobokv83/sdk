@@ -74,6 +74,9 @@ jobs:
           path: languages/cpp/include
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
+      - name: Check cmake
+        run: cmake --version; exit 1
+
       - name: Setup C++ macos arm64
         env:
           LLVM_VERSION: 17.0.1
@@ -87,9 +90,6 @@ jobs:
           cd /Volumes/${LLVM_ARM_NAME}
           ls -alh
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/" ${HOME}/llvm
-
-      - name: CLANG PATH
-        run: which clang; exit 1
 
       # - name: Restore C++ cache
       #   uses: actions/cache@v3
