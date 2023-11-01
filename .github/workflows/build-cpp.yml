@@ -86,8 +86,6 @@ jobs:
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cd /Volumes/${LLVM_ARM_NAME}
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/" ${HOME}/llvm
-          cd ${HOME}
-          hdiutil detach "/Volumes/${LLVM_ARM_NAME}"
 
       # - name: Setup C++
       #   if: "matrix.settings.architecture=='x86_64'
@@ -237,7 +235,6 @@ jobs:
         run: |
           cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/nlohmann_json/include -DBOOST=${{ env.LIBS_PATH }}/boost/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 # -DCMAKE_CXX_COMPILER=/usr/local/bin/aarch64-none-elf-g++
           cmake --build .
-          cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
       - name: Build Windows C++ Project
         if: "contains(matrix.settings.os, 'windows')"
