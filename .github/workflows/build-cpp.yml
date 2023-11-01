@@ -86,6 +86,7 @@ jobs:
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cd /Volumes/${LLVM_ARM_NAME}
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/" ${HOME}/llvm
+          cd ${HOME}
           hdiutil detach "/Volumes/${LLVM_ARM_NAME}"
 
       # - name: Setup C++
