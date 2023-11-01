@@ -86,11 +86,10 @@ jobs:
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cd /Volumes/${LLVM_ARM_NAME}
           ls -alh
-          exit 1
-          cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/*" ${HOME}/llvm
+          cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/" ${HOME}/llvm
 
       - name: CLANG PATH
-        run: which clang
+        run: which clang; exit 1
 
       # - name: Restore C++ cache
       #   uses: actions/cache@v3
