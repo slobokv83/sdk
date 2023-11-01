@@ -84,6 +84,9 @@ jobs:
           sleep 10
           mkdir -p ${HOME}/llvm
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
+          cd /Volumes/${LLVM_ARM_NAME}
+          ls -alh
+          exit 1
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/*" ${HOME}/llvm
 
       - name: CLANG PATH
