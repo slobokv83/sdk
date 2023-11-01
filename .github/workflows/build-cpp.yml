@@ -74,9 +74,6 @@ jobs:
           path: languages/cpp/include
         if: contains(matrix.settings.os, 'macos') && matrix.settings.architecture=='arm64'
 
-      - name: Check cmake
-        run: cmake --version; exit 1
-
       - name: Setup C++ macos arm64
         env:
           LLVM_VERSION: 17.0.1
@@ -240,7 +237,7 @@ jobs:
             echo "feature = <include>no ;" >> user-config.jam
 
             ./bootstrap.sh --prefix=${{ env.LIBS_PATH }}/boost
-            ./b2 install --prefix=${{ env.LIBS_PATH }}/boost --user-config=user-config.jam
+            ./b2 architecture=arm address-model=64 install --prefix=${{ env.LIBS_PATH }}/boost --user-config=user-config.jam
           # else
           #   echo "using gcc : arm : /usr/local/bin/aarch64-none-elf-g++ ;" >> user-config.jam
           #   echo "feature = <include>no ;" >> user-config.jam
@@ -279,7 +276,7 @@ jobs:
         if: "matrix.settings.architecture=='arm64' && contains(matrix.settings.os, 'macos')"
         working-directory: languages/cpp/build
         run: |
-          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/nlohmann_json/include -DBOOST=${{ env.LIBS_PATH }}/boost/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_CXX_COMPILER=/usr/local/bin/aarch64-none-elf-g++
+          cmake .. -DNLOHMANN=${{ env.LIBS_PATH }}/nlohmann_json/include -DBOOST=${{ env.LIBS_PATH }}/boost/include -DTARGET=./build/${{ matrix.settings.prefix }}bitwarden_c.${{ matrix.settings.extension }} -DCMAKE_OSX_ARCHITECTURES=arm64 # -DCMAKE_CXX_COMPILER=/usr/local/bin/aarch64-none-elf-g++
           cmake --build .
           cp ./Debug/${{ matrix.settings.prefix }}BitwardenClient.${{ matrix.settings.extension }} .
 
