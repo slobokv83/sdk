@@ -81,10 +81,13 @@ jobs:
           LLVM_ARM_NAME=LLVMEmbeddedToolchainForArm-${{ env.LLVM_VERSION }}-Darwin
           wget -q https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/download/release-${{ env.LLVM_VERSION }}/${LLVM_ARM_NAME}.dmg
           hdiutil attach ${LLVM_ARM_NAME}.dmg
+          sleep 10
           mkdir -p ${HOME}/llvm
           echo "${HOME}/llvm/bin" >> $GITHUB_PATH
           cp -rf "/Volumes/${LLVM_ARM_NAME}/${LLVM_ARM_NAME}/*" ${HOME}/llvm
-          which clang
+
+      - name: CLANG PATH
+        run: which clang
 
       # - name: Restore C++ cache
       #   uses: actions/cache@v3
